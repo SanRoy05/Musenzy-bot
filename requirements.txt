@@ -3,4 +3,4 @@ TgCrypto==1.2.5
 py-tgcalls==0.9.35
 yt-dlp
 python-dotenv
-motor
+aiohttp

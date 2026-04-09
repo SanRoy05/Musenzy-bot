@@ -35,6 +35,9 @@ MAX_QUEUE_SIZE: int = _int("MAX_QUEUE_SIZE", 20)
 DEFAULT_VOLUME: int = _int("DEFAULT_VOLUME", 100)
 DOWNLOAD_DIR: str = os.getenv("DOWNLOAD_DIR", "/tmp/musenzy")
 
+# ── Web Server (Health Check) ──────────────────────────────────────────────────
+PORT: int = _int("PORT", 8000)
+
 # ── Validate mandatory fields at import time ──────────────────────────────────
 _REQUIRED = {
     "API_ID": API_ID,

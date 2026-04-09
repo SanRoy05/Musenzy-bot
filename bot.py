@@ -23,6 +23,7 @@ except RuntimeError:
     asyncio.set_event_loop(asyncio.new_event_loop())
 
 from pyrogram import Client
+from aiohttp import web
 
 import config
 import player
@@ -37,12 +38,26 @@ logging.basicConfig(
 log = logging.getLogger("musenzy")
 
 
+async def start_web_server() -> None:
+    """Launch a background aiohttp server for Koyeb health checks."""
+    app = web.Application()
+    app.router.add_get("/", lambda r: web.Response(text="OK", status=200))
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, "0.0.0.0", config.PORT)
+    await site.start()
+    log.info("🌐 Health check server running on port %s", config.PORT)
+
+
 async def main() -> None:
     # ── 1. Database ───────────────────────────────────────────────────────────
     log.info("Initializing JSON database…")
     db.init()
 
-    # ── 2. Userbot (streams audio/video in VC) ────────────────────────────────
+    # ── 2. Web Server (Health Check) ──────────────────────────────────────────
+    await start_web_server()
+
+    # ── 3. Userbot (streams audio/video in VC) ────────────────────────────────
     userbot = Client(
         name="musenzy_userbot",
         api_id=config.API_ID,
@@ -50,7 +65,7 @@ async def main() -> None:
         session_string=config.SESSION_STRING,
     )
 
-    # ── 3. Bot (handles commands) ─────────────────────────────────────────────
+    # ── 4. Bot (handles commands) ─────────────────────────────────────────────
     bot = Client(
         name="musenzy_bot",
         api_id=config.API_ID,
@@ -58,10 +73,10 @@ async def main() -> None:
         bot_token=config.BOT_TOKEN,
     )
 
-    # ── 4. PyTgCalls — must be initialised before clients start ───────────────
+    # ── 5. PyTgCalls — must be initialised before clients start ───────────────
     call_py = player.init(userbot, bot)
 
-    # ── 5. Register all command / callback handlers ───────────────────────────
+    # ── 6. Register all command / callback handlers ───────────────────────────
     handlers.register(bot)
 
     log.info("Starting clients…")
@@ -69,11 +84,11 @@ async def main() -> None:
     await bot.start()
     await call_py.start()
 
-    # ── 6. Startup notification ───────────────────────────────────────────────
+    # ── 7. Startup notification ───────────────────────────────────────────────
     me = await bot.get_me()
     log.info("✅ Musenzy is live — @%s", me.username)
 
-    # ── 7. Keep running until shutdown signal ─────────────────────────────────
+    # ── 8. Keep running until shutdown signal ─────────────────────────────────
     stop_event = asyncio.Event()
 
     def _shutdown(*_: object) -> None:
