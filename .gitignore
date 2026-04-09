@@ -1,0 +1,38 @@
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+
+# ── Virtual environments ──────────────────────────────────────────────────────
+.venv/
+venv/
+env/
+.env
+
+# ── Pyrogram session files ────────────────────────────────────────────────────
+*.session
+*.session-journal
+musenzy_bot.session*
+musenzy_userbot.session*
+session_gen.session*
+
+# ── Downloads / temp / data ──────────────────────────────────────────────────
+/tmp/
+downloads/
+data/db.json
+data/*.tmp
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+
+# ── IDEs ─────────────────────────────────────────────────────────────────────
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# ── OS ───────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
