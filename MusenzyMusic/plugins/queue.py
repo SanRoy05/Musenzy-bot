@@ -1,5 +1,5 @@
 from pyrogram import filters, types
-from MusenzyMusic import app
+from MusenzyMusic.core.instances import app
 from MusenzyMusic.utils.queue import queue
 import config
 

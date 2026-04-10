@@ -1,5 +1,5 @@
 from pyrogram import filters, types
-from MusenzyMusic import app
+from MusenzyMusic.core.instances import app
 import config
 
 @app.on_message(filters.command("start") & filters.private)

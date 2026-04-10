@@ -1,6 +1,6 @@
 import asyncio
 from pyrogram import idle
-from MusenzyMusic import app, userbot, call_py
+from MusenzyMusic.core.instances import app, userbot, call_py
 import config
 
 async def init():

@@ -1,5 +1,5 @@
 from pyrogram import filters, types
-from MusenzyMusic import app, call_py, db
+from MusenzyMusic.core.instances import app, call_py, db
 import config
 
 @app.on_message(filters.command(["pause", "resume", "skip", "stop", "vol", "volume", "loop"]) & filters.group)

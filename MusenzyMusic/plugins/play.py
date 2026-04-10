@@ -1,5 +1,5 @@
 from pyrogram import filters, types
-from MusenzyMusic import app, call_py, db
+from MusenzyMusic.core.instances import app, call_py, db
 from MusenzyMusic.utils.ytdl import ytdl
 from MusenzyMusic.utils.queue import queue, Track
 from MusenzyMusic.utils.thumbnails import thumb_manager

@@ -19,7 +19,7 @@ class CallManager:
 
     async def start(self):
         # Initialize only when started to ensure MTProto client is ready
-        self.call_py = PyTgCalls(self.userbot)
+        self.call_py = PyTgCalls(self.userbot.app)
         await self.call_py.start()
         self._register_handlers()
 
