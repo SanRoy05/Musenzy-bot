@@ -13,9 +13,9 @@ from pytgcalls import PyTgCalls, idle
 from pytgcalls.types import MediaStream
 
 from pytgcalls.exceptions import (
-    NoActiveGroupCall,
-    AlreadyJoinedError,
+    GroupCallNotFound,
     NotInGroupCallError,
+    PyTgCallsAlreadyRunning,
 )
 
 import config
@@ -78,7 +78,7 @@ async def _stream(chat_id: int, track: Track):
     try:
         # play() automatically handles both join and change_stream in py-tgcalls 2.2.x
         await _call_py.play(chat_id, MediaStream(path))
-    except NoActiveGroupCall:
+    except GroupCallNotFound:
         log.warning("No active group call in %s", chat_id)
         if _bot:
             await _bot.send_message(chat_id, "❌ No active voice chat found. Please start one first.")
