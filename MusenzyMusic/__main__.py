@@ -1,10 +1,10 @@
 import asyncio
 import pyrogram.errors
+import importlib
+import sys
 
 # ──────────────────────────────────────────────────────────────────────────────
 # MONKEY-PATCH: Fix compatibility between py-tgcalls 2.2.11 and Pyrogram 2.x
-# PyTgCalls expects GroupcallForbidden to exist in pyrogram.errors, but it was 
-# removed/renamed in recent Pyrogram versions.
 # ──────────────────────────────────────────────────────────────────────────────
 if not hasattr(pyrogram.errors, "GroupcallForbidden"):
     class GroupcallForbidden(Exception):
@@ -19,8 +19,22 @@ import config
 async def init():
     print("🎵 Initializing Musenzy Music Bot...")
     
-    # Manually configure plugins BEFORE starting the bot
-    # This avoids circular imports during the initial instantiation
+    # ──────────────────────────────────────────────────────────────────────────
+    # DIAGNOSTIC: Force-import plugins to reveal hidden errors
+    # ──────────────────────────────────────────────────────────────────────────
+    print("🔍 Diagnosing plugin loading...")
+    plugins_to_check = ["start", "play", "controls", "queue"]
+    for plugin in plugins_to_check:
+        try:
+            importlib.import_module(f"MusenzyMusic.plugins.{plugin}")
+            print(f"✅ Plugin '{plugin}' imported successfully.")
+        except Exception as e:
+            print(f"❌ Error loading plugin '{plugin}': {e}")
+            import traceback
+            traceback.print_exc()
+    # ──────────────────────────────────────────────────────────────────────────
+
+    # Manually configure plugins
     app.plugins = dict(root="MusenzyMusic.plugins")
     
     # Start Clients

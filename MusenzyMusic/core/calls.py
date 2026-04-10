@@ -1,5 +1,6 @@
 from pytgcalls import PyTgCalls
-from pytgcalls.types import MediaStream
+from pytgcalls.types import MediaStream, Update
+from pytgcalls.types.stream import StreamAudioEnded
 from MusenzyMusic.core.userbot import Userbot
 from MusenzyMusic.utils.queue import queue, Track
 from MusenzyMusic.utils.ytdl import ytdl
@@ -12,10 +13,11 @@ class CallManager:
         self.call_py = None
 
     def _register_handlers(self):
-        @self.call_py.on_stream_end()
-        async def on_stream_end(client, update):
-            chat_id = update.chat_id
-            await self.play_next(chat_id)
+        @self.call_py.on_update()
+        async def on_update(client, update: Update):
+            if isinstance(update, StreamAudioEnded):
+                chat_id = update.chat_id
+                await self.play_next(chat_id)
 
     async def start(self):
         # Initialize only when started to ensure MTProto client is ready
