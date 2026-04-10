@@ -2,15 +2,16 @@ import json
 import os
 import asyncio
 from typing import List, Set
+import config
 
 class JsonDatabase:
     def __init__(self, path: str):
         self.path = path
         self.data = {
-            "sudoers": [],
+            "sudoers": [config.OWNER_ID],
             "blacklisted_chats": [],
             "blacklisted_users": [],
-            "chats_config": {}
+            "chats_config": {} # {chat_id: {"volume": 100, "loop": False}}
         }
         self.lock = asyncio.Lock()
         self._load()
@@ -19,7 +20,11 @@ class JsonDatabase:
         if os.path.exists(self.path):
             try:
                 with open(self.path, "r") as f:
-                    self.data.update(json.load(f))
+                    loaded = json.load(f)
+                    self.data.update(loaded)
+                    # Force owner to be in sudoers
+                    if config.OWNER_ID not in self.data["sudoers"]:
+                        self.data["sudoers"].append(config.OWNER_ID)
             except Exception:
                 pass
 
@@ -31,6 +36,10 @@ class JsonDatabase:
         async with self.lock:
             return self.data.get("sudoers", [])
 
+    async def is_sudo(self, user_id: int) -> bool:
+        async with self.lock:
+            return user_id in self.data["sudoers"] or user_id == config.OWNER_ID
+
     async def add_sudo(self, user_id: int):
         async with self.lock:
             if user_id not in self.data["sudoers"]:
@@ -39,7 +48,7 @@ class JsonDatabase:
 
     async def del_sudo(self, user_id: int):
         async with self.lock:
-            if user_id in self.data["sudoers"]:
+            if user_id in self.data["sudoers"] and user_id != config.OWNER_ID:
                 self.data["sudoers"].remove(user_id)
                 self._save()
 
@@ -47,14 +56,16 @@ class JsonDatabase:
         async with self.lock:
             return chat_id in self.data["blacklisted_chats"] or chat_id in self.data["blacklisted_users"]
 
-    async def blacklist_chat(self, chat_id: int):
+    async def get_chat_config(self, chat_id: int):
         async with self.lock:
-            if chat_id not in self.data["blacklisted_chats"]:
-                self.data["blacklisted_chats"].append(chat_id)
+            if str(chat_id) not in self.data["chats_config"]:
+                self.data["chats_config"][str(chat_id)] = {"volume": 100, "loop": False}
                 self._save()
+            return self.data["chats_config"][str(chat_id)]
 
-    async def unblacklist_chat(self, chat_id: int):
+    async def set_chat_config(self, chat_id: int, key: str, value):
         async with self.lock:
-            if chat_id in self.data["blacklisted_chats"]:
-                self.data["blacklisted_chats"].remove(chat_id)
-                self._save()
+            if str(chat_id) not in self.data["chats_config"]:
+                self.data["chats_config"][str(chat_id)] = {"volume": 100, "loop": False}
+            self.data["chats_config"][str(chat_id)][key] = value
+            self._save()
