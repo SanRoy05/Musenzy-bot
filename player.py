@@ -11,10 +11,9 @@ from typing import Optional
 from pyrogram import Client
 from pytgcalls import PyTgCalls
 from pytgcalls.types import (
-    AudioPiped,
-    AudioVideoPiped,
-    AudioParameters,
-    VideoParameters,
+    MediaStream,
+    AudioQuality,
+    VideoQuality,
 )
 from pytgcalls.exceptions import (
     NoActiveGroupCall,
@@ -77,17 +76,17 @@ def _safe_delete(path: str):
 
 def _make_stream(track: Track):
     """Build the appropriate PyTgCalls stream object."""
+    path = track.file_path or track.url
     if track.is_video and track.file_path:
-        return AudioVideoPiped(
-            track.file_path,
-            audio_parameters=AudioParameters(bitrate=128),
-            video_parameters=VideoParameters(width=854, height=480, framerate=24),
+        return MediaStream(
+            path,
+            audio_parameters=AudioQuality.STUDIO,
+            video_parameters=VideoQuality.SD_480p,
         )
     # Audio only
-    path = track.file_path or track.url
-    return AudioPiped(
+    return MediaStream(
         path,
-        audio_parameters=AudioParameters(bitrate=128),
+        audio_parameters=AudioQuality.STUDIO,
     )
 
 
