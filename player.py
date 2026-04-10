@@ -39,8 +39,13 @@ def init(userbot: Client, bot: Client) -> PyTgCalls:
     _bot = bot
     _call_py = PyTgCalls(userbot)
 
-    @_call_py.on_stream_end()
-    async def on_stream_end(_, update):
+    @_call_py.on_update()
+    async def on_update(_, update):
+        # In py-tgcalls 2.2.x, we handle multiple update types via on_update.
+        # We only care about stream ending (e.g., StreamAudioEnded).
+        if "Ended" not in type(update).__name__:
+            return
+
         chat_id = update.chat_id
         state = await qm.get_state(chat_id)
         # Delete the just-played file to save disk space.
