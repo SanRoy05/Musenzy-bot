@@ -46,3 +46,7 @@ def register(bot: Client):
     @bot.on_message(filters.command(["start", "help"]))
     async def cmd_start(_, msg: Message):
         await msg.reply_text(HELP_TEXT, disable_web_page_preview=True)
+
+    @bot.on_message(filters.command("ping"))
+    async def cmd_ping(_, msg: Message):
+        await msg.reply_text("🏓 Pong! Bot is alive.")
