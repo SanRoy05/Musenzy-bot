@@ -1,5 +1,6 @@
 import asyncio
 import yt_dlp
+from typing import Optional
 from MusenzyMusic.utils.queue import Track
 import config
 
