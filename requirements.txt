@@ -1,6 +1,7 @@
-pyrogram==2.0.106
-TgCrypto==1.2.5
 py-tgcalls[pyrogram]==2.2.11
+pyrogram==2.0.106
+TgCrypto
 yt-dlp
-python-dotenv==1.0.1
+python-dotenv
+Pillow
 aiohttp

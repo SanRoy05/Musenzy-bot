@@ -1,54 +1,26 @@
-"""
-config.py — Load all configuration from environment variables.
-"""
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
+# API Credentials
+API_ID = int(os.getenv("API_ID", 0))
+API_HASH = os.getenv("API_HASH")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+SESSION = os.getenv("SESSION")
+OWNER_ID = int(os.getenv("OWNER_ID", 0))
 
-def _int(key: str, default: int) -> int:
-    try:
-        return int(os.getenv(key, default))
-    except (ValueError, TypeError):
-        return default
+# Branding
+BOT_NAME = "Musenzy"
+HELP_HEADER = "🎵 Musenzy Music Bot"
+BRANDING_TEXT = "Musenzy Music"
 
+# Limits & Defaults
+DURATION_LIMIT = 3600 # 60 minutes
+PLAYLIST_LIMIT = 20
+DEFAULT_THUMB = "https://telegra.ph/file/edba550d5e1657c96a30c.jpg" # Example fallback
 
-# ── Telegram credentials ──────────────────────────────────────────────────────
-API_ID: int = _int("API_ID", 0)
-API_HASH: str = os.getenv("API_HASH", "")
-BOT_TOKEN: str = os.getenv("BOT_TOKEN", "")
-SESSION_STRING: str = os.getenv("SESSION_STRING", "")
-
-# ── Access control ────────────────────────────────────────────────────────────
-# Single owner — highest permission level (Level 1).
-OWNER_ID: int = _int("OWNER_ID", 0)
-
-# ── MongoDB ───────────────────────────────────────────────────────────────────
-# Removed in favor of local JSON DB.
-
-# ── Logger chat ───────────────────────────────────────────────────────────────
-# Removed.
-
-# ── Player settings ───────────────────────────────────────────────────────────
-MAX_QUEUE_SIZE: int = _int("MAX_QUEUE_SIZE", 20)
-DEFAULT_VOLUME: int = _int("DEFAULT_VOLUME", 100)
-DOWNLOAD_DIR: str = os.getenv("DOWNLOAD_DIR", "/tmp/musenzy")
-
-# ── Web Server (Health Check) ──────────────────────────────────────────────────
-PORT: int = _int("PORT", 8000)
-
-# ── Validate mandatory fields at import time ──────────────────────────────────
-_REQUIRED = {
-    "API_ID": API_ID,
-    "API_HASH": API_HASH,
-    "BOT_TOKEN": BOT_TOKEN,
-    "SESSION_STRING": SESSION_STRING,
-    "OWNER_ID": OWNER_ID,
-}
-for _name, _val in _REQUIRED.items():
-    if not _val:
-        raise RuntimeError(f"[config] Missing required env var: {_name}")
-
-# Ensure download directory exists.
-os.makedirs(DOWNLOAD_DIR, exist_ok=True)
+# Paths
+DOWNLOAD_DIR = "downloads"
+CACHE_DIR = "cache"
+DB_PATH = "database.json"

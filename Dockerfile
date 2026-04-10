@@ -1,22 +1,20 @@
 FROM python:3.11-slim
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        ffmpeg \
-        git \
+RUN apt-get update && apt-get install -y \
+    ffmpeg \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
+# Set working directory
 WORKDIR /app
 
-# Install Python deps first (cached layer)
+# Install python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy source
+# Copy the rest of the application
 COPY . .
 
-# Create the default download directory and data directory
-RUN mkdir -p /tmp/musenzy /app/data
-
-# rebuild-2026-04-10-v2
-CMD ["python", "-u", "bot.py"]
+# Start the bot
+CMD ["python", "-m", "MusenzyMusic"]
