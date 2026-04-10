@@ -10,11 +10,9 @@ from typing import Optional
 
 from pyrogram import Client
 from pytgcalls import PyTgCalls
-from pytgcalls.types import (
-    MediaStream,
-    AudioQuality,
-    VideoQuality,
-)
+from pytgcalls.types.input_stream import AudioPiped, AudioVideoPiped
+from pytgcalls.types.input_stream.quality import HighQualityAudio, MediumQualityAudio
+
 from pytgcalls.exceptions import (
     NoActiveGroupCall,
     AlreadyJoinedError,
@@ -78,15 +76,14 @@ def _make_stream(track: Track):
     """Build the appropriate PyTgCalls stream object."""
     path = track.file_path or track.url
     if track.is_video and track.file_path:
-        return MediaStream(
+        return AudioVideoPiped(
             path,
-            audio_parameters=AudioQuality.STUDIO,
-            video_parameters=VideoQuality.SD_480p,
+            HighQualityAudio()
         )
     # Audio only
-    return MediaStream(
+    return AudioPiped(
         path,
-        audio_parameters=AudioQuality.STUDIO,
+        HighQualityAudio()
     )
 
 
