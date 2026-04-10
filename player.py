@@ -9,9 +9,8 @@ import logging
 from typing import Optional
 
 from pyrogram import Client
-from pytgcalls import PyTgCalls
-from pytgcalls.types.input_stream import AudioPiped, AudioVideoPiped
-from pytgcalls.types.input_stream.quality import HighQualityAudio, MediumQualityAudio
+from pytgcalls import PyTgCalls, idle
+from pytgcalls.types import MediaStream
 
 from pytgcalls.exceptions import (
     NoActiveGroupCall,
@@ -72,28 +71,13 @@ def _safe_delete(path: str):
         log.warning("Could not delete %s: %s", path, exc)
 
 
-def _make_stream(track: Track):
-    """Build the appropriate PyTgCalls stream object."""
-    path = track.file_path or track.url
-    if track.is_video and track.file_path:
-        return AudioVideoPiped(
-            path,
-            HighQualityAudio()
-        )
-    # Audio only
-    return AudioPiped(
-        path,
-        HighQualityAudio()
-    )
-
-
 async def _stream(chat_id: int, track: Track):
     """Start or switch the stream for chat_id."""
-    stream = _make_stream(track)
+    path = track.file_path or track.url
+    
     try:
-        await _call_py.join_group_call(chat_id, stream)
-    except AlreadyJoinedError:
-        await _call_py.change_stream(chat_id, stream)
+        # play() automatically handles both join and change_stream in py-tgcalls 2.2.x
+        await _call_py.play(chat_id, MediaStream(path))
     except NoActiveGroupCall:
         log.warning("No active group call in %s", chat_id)
         if _bot:
