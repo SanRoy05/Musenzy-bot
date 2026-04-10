@@ -106,10 +106,24 @@ async def _stream(chat_id: int, track: Track):
             f"user</a>"
         )
         try:
-            msg = await _bot.send_message(chat_id, text, disable_web_page_preview=True)
+            # Try sending with thumbnail first
+            if track.thumbnail:
+                msg = await _bot.send_photo(
+                    chat_id,
+                    photo=track.thumbnail,
+                    caption=text,
+                    disable_web_page_preview=True
+                )
+            else:
+                msg = await _bot.send_message(chat_id, text, disable_web_page_preview=True)
             _np_messages[chat_id] = msg.id
         except Exception:
-            pass
+            # Fallback to plain text message if photo fails
+            try:
+                msg = await _bot.send_message(chat_id, text, disable_web_page_preview=True)
+                _np_messages[chat_id] = msg.id
+            except Exception:
+                pass
 
 
 async def _leave(chat_id: int):

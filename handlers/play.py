@@ -122,7 +122,12 @@ async def _resolve_and_play(
             return
 
         if info.get("_type") == "playlist" or info.get("entries"):
-            entries = await get_playlist_entries(query_or_url, config.MAX_QUEUE_SIZE)
+            try:
+                entries = await get_playlist_entries(query_or_url, config.MAX_QUEUE_SIZE)
+            except Exception as e:
+                await status.edit_text(f"❌ Failed to parse playlist: {e}")
+                return
+
             await status.edit_text(f"📃 Queuing **{len(entries)}** tracks from playlist…")
             for entry in entries:
                 await _download_and_enqueue(bot, chat_id, user_id, entry, is_video, None)
