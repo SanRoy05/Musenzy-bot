@@ -12,11 +12,6 @@ from pyrogram import Client
 from pytgcalls import PyTgCalls, idle
 from pytgcalls.types import MediaStream
 
-from pytgcalls.exceptions import (
-    GroupCallNotFound,
-    NotInGroupCallError,
-    PyTgCallsAlreadyRunning,
-)
 
 import config
 import queue_manager as qm
@@ -78,15 +73,15 @@ async def _stream(chat_id: int, track: Track):
     try:
         # play() automatically handles both join and change_stream in py-tgcalls 2.2.x
         await _call_py.play(chat_id, MediaStream(path))
-    except GroupCallNotFound:
-        log.warning("No active group call in %s", chat_id)
-        if _bot:
-            await _bot.send_message(chat_id, "❌ No active voice chat found. Please start one first.")
-        return
     except Exception as exc:
-        log.exception("Stream error in %s: %s", chat_id, exc)
-        if _bot:
-            await _bot.send_message(chat_id, f"❌ Playback error: {exc}")
+        if "GroupCallNotFound" in str(type(exc)):
+            log.warning("No active group call in %s", chat_id)
+            if _bot:
+                await _bot.send_message(chat_id, "❌ No active voice chat found. Please start one first.")
+        else:
+            log.exception("Stream error in %s: %s", chat_id, exc)
+            if _bot:
+                await _bot.send_message(chat_id, f"❌ Playback error: {exc}")
         return
 
     # Announce now-playing.
@@ -109,7 +104,7 @@ async def _stream(chat_id: int, track: Track):
 async def _leave(chat_id: int):
     try:
         await _call_py.leave_group_call(chat_id)
-    except (NotInGroupCallError, Exception):
+    except Exception:
         pass
 
 
