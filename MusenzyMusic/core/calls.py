@@ -8,8 +8,8 @@ import asyncio
 
 class CallManager:
     def __init__(self, userbot: Userbot):
-        self.call_py = PyTgCalls(userbot)
-        self._register_handlers()
+        self.userbot = userbot
+        self.call_py = None
 
     def _register_handlers(self):
         @self.call_py.on_stream_end()
@@ -18,7 +18,10 @@ class CallManager:
             await self.play_next(chat_id)
 
     async def start(self):
+        # Initialize only when started to ensure MTProto client is ready
+        self.call_py = PyTgCalls(self.userbot)
         await self.call_py.start()
+        self._register_handlers()
 
     async def play(self, chat_id: int, track: Track):
         if not track.file_path:

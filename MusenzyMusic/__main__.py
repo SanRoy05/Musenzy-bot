@@ -6,13 +6,14 @@ import config
 async def init():
     print("🎵 Initializing Musenzy Music Bot...")
     
-    # Start the bot
+    # 1. Start the bot client (Pyrogram)
     await app.start()
     
-    # Start the assistant
+    # 2. Start the assistant client (Pyrogram)
     await userbot.start()
     
-    # Start the calls client
+    # 3. Initialize and start the calls client (PyTgCalls)
+    # This must happen AFTER userbot.start() in version 2.2.x
     await call_py.start()
     
     print("🎵 Musenzy Bot is now live!")
