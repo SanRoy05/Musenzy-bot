@@ -9,6 +9,12 @@ import logging
 from typing import Optional
 
 from pyrogram import Client
+
+import pyrogram.errors
+if not hasattr(pyrogram.errors, 'GroupcallForbidden'):
+    class GroupcallForbidden(Exception): pass
+    pyrogram.errors.GroupcallForbidden = GroupcallForbidden
+
 from pytgcalls import PyTgCalls, idle
 from pytgcalls.types import MediaStream
 
